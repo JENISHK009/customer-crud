@@ -14,10 +14,10 @@ const app = express();
 dotenv.config();
 
 async function startServer() {
-    // await connectToDataBase()
+    await connectToDataBase()
     // await connectToDatabasePromise()
     // await connectUsingMongodb()
-    await createDatabaseConnection()
+    // await createDatabaseConnection()
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
