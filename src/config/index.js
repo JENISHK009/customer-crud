@@ -55,7 +55,7 @@ const connectUsingMongodb = async () => {
         console.log('Connected to MongoDB');
 
         const db = client.db('customer-crud');
-
+        return db
     } catch (error) {
         console.error('Error connecting:', error);
     }

@@ -1,5 +1,7 @@
 import { customerModel } from '../models/index.js';
 import { Types } from 'mongoose';
+import { createDatabaseConnection, connectToDataBase, connectToDatabasePromise, connectUsingMongodb } from '../config/index.js';
+import { ObjectId } from 'mongodb';
 
 const handleError = (res, error) => {
     console.error(error);
@@ -8,6 +10,7 @@ const handleError = (res, error) => {
 
 const createCustomer = async ({ body }, res) => {
     try {
+        await connectToDataBase()                        // DB connection method 1
         const { firstname, lastname, mobileNumber } = body;
 
         if (!firstname || !lastname || !mobileNumber) {
@@ -31,7 +34,10 @@ const createCustomer = async ({ body }, res) => {
 
 const getAllCustomers = async (_, res) => {
     try {
-        const customers = await customerModel.find();
+        const connection = await createDatabaseConnection();                       // DB connection method 2
+        const CustomerModel = connection.model('Customer', customerModel.schema);
+
+        const customers = await CustomerModel.find();
         res.status(200).send({ success: true, data: customers });
     } catch (error) {
         handleError(res, error);
@@ -40,6 +46,8 @@ const getAllCustomers = async (_, res) => {
 
 const getCustomerById = async ({ query }, res) => {
     try {
+        await connectToDatabasePromise()                       // DB connection method 3
+
         const { customerId } = query;
 
         if (!customerId || !Types.ObjectId.isValid(customerId)) {
@@ -84,19 +92,20 @@ const updateCustomer = async ({ body }, res) => {
 
 const deleteCustomer = async ({ query }, res) => {
     try {
-        const { customerId } = query;
+        let connection = await connectUsingMongodb()                       // DB connection method 4
+        const customersCollection = connection.collection('customers');
 
+        const { customerId } = query;
         if (!customerId || !Types.ObjectId.isValid(customerId)) {
             return res.status(400).send({ success: false, message: "Invalid customerId" });
         }
 
-        const deletedCustomer = await customerModel.findByIdAndDelete(customerId);
-
+        const deletedCustomer = await customersCollection.findOneAndDelete({ _id: new ObjectId(customerId) });
         if (!deletedCustomer) {
             return res.status(404).send({ success: false, message: "Customer not found" });
         }
 
-        res.status(200).send({ success: true, message: "Customer deleted successfully" });
+        res.status(200).send({ success: true, message: deletedCustomer });
     } catch (error) {
         handleError(res, error);
     }

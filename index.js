@@ -2,23 +2,12 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import {
-    connectToDataBase,
-    connectToDatabasePromise,
-    connectUsingMongodb,
-    createDatabaseConnection,
-} from "./src/config/index.js";
 import { customerRoutes } from "./src/routes/index.js";
 
 const app = express();
 dotenv.config();
 
 async function startServer() {
-    await connectToDataBase()
-    // await connectToDatabasePromise()
-    // await connectUsingMongodb()
-    // await createDatabaseConnection()
-
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cors());
