@@ -49,6 +49,7 @@ const connectUsingMongodb = async () => {
     const uri = process.env.DATABASE_URL_MONGODB;
     const client = new MongoClient(uri);
 
+
     try {
         await client.connect();
         console.log('Connected to MongoDB');
