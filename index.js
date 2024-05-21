@@ -4,28 +4,33 @@ import cors from "cors";
 import dotenv from "dotenv";
 import {
     connectToDataBase,
-    createDatabaseConnection,
     connectToDatabasePromise,
-    connectUsingMongodb
+    connectUsingMongodb,
+    createDatabaseConnection,
 } from "./src/config/index.js";
 import { customerRoutes } from "./src/routes/index.js";
 
 const app = express();
-
 dotenv.config();
 
-connectToDataBase()
-// createDatabaseConnection()
-// connectToDatabasePromise()
-// connectUsingMongodb()
+async function startServer() {
+    // await connectToDataBase()
+    // await connectToDatabasePromise()
+    // await connectUsingMongodb()
+    await createDatabaseConnection()
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(cors());
 
-app.use("/customer", customerRoutes);
+    app.use("/customer", customerRoutes);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+startServer().catch((error) => {
+    console.error("Error starting server:", error);
 });
