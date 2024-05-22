@@ -3,11 +3,13 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import { customerRoutes } from "./src/routes/index.js";
+import { initializeConnections } from "./src/config/index.js";
 
 const app = express();
 dotenv.config();
 
 async function startServer() {
+    await initializeConnections();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cors());
