@@ -56,9 +56,7 @@ const updateCustomer = async ({ body }, res) => {
     try {
         const { customerId, updatedData } = body;
 
-        if (!customerId || !Types.ObjectId.isValid(customerId)) {
-            return res.status(400).send({ success: false, message: "Invalid customerId" });
-        }
+        if (!validateObjectId(customerId, res)) return;
 
         if (!updatedData || Object.keys(updatedData).length === 0) {
             return res.status(400).send({ success: false, message: "Please pass data" });
