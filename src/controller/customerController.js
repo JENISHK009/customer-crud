@@ -3,12 +3,17 @@ import { getConnection } from '../config/index.js'
 import { ObjectId } from 'mongodb';
 import { validateObjectId, handleError, validateMobileNumber } from '../utils/index.js'
 
-const createCustomer = async ({ body }, res) => {
+const createCustomer = async (req, res) => {
     try {
-        const { firstname, lastname, mobileNumber } = body;
+        const { firstname, lastname, mobileNumber } = req.body;
 
-        if (!firstname || !lastname || !mobileNumber) {
-            return res.status(400).send({ success: false, message: "All fields are required" });
+        const validationErrors = [];
+        if (!firstname) validationErrors.push('firstname');
+        if (!lastname) validationErrors.push('lastname');
+        if (!mobileNumber) validationErrors.push('mobileNumber');
+
+        if (validationErrors.length > 0) {
+            return res.status(400).send({ success: false, message: `${validationErrors.join(", ")} is required` });
         }
 
         if (!validateMobileNumber(mobileNumber, res)) return;
@@ -21,6 +26,7 @@ const createCustomer = async ({ body }, res) => {
         handleError(res, error);
     }
 };
+
 
 const getAllCustomers = async (_, res) => {
     try {
