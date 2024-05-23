@@ -3,7 +3,7 @@ import _ from 'lodash';
 import __ from 'underscore';
 import { customerModel } from '../models/index.js';
 import { getConnection } from '../config/index.js'
-import { validateObjectId, handleError, validateMobileNumber, sortingMethod3, sortingMethod4 } from '../utils/index.js'
+import { validateObjectId, handleError, validateMobileNumber, sortingMethod3, sortingMethod4, sortingMethod5 } from '../utils/index.js'
 
 
 const createCustomer = async (req, res) => {
@@ -41,7 +41,7 @@ const getAllCustomers = async ({ query }, res) => {
         const db = getConnection('createDatabaseConnection');
         const CustomerModel = db.model('Customer', customerModel.schema);
 
-        const { search, sort } = query;
+        const { search, sort = 'asc' } = query;
         const filter = search ? { $or: [{ firstname: new RegExp(search, 'i') }, { lastname: new RegExp(search, 'i') }, { mobileNumber: new RegExp(search, 'i') }] } : {};
 
         let getDataTime1 = performance.now();
@@ -56,37 +56,43 @@ const getAllCustomers = async ({ query }, res) => {
         const endTime1 = performance.now();
         const timeTaken1 = endTime1 - startTime1;
 
+        // sort using method 2 - usinf slice and sort
         const startTime2 = performance.now();
-        // sort using method 2 - using slice sort
-        const method2 = customersWithoutSort.slice().sort((a, b) => a.mobileNumber.localeCompare(b.mobileNumber));
+        const method2 = customersWithoutSort.slice().sort((a, b) => sort === 'desc' ? b.mobileNumber.localeCompare(a.mobileNumber) : a.mobileNumber.localeCompare(b.mobileNumber));
         const endTime2 = performance.now();
         const timeTaken2 = (endTime2 - startTime2) + databaseTime;
 
         const startTime3 = performance.now();
         // sort using method 3 - using 2 for loops
-        const method3 = sortingMethod3(customersWithoutSort);
+        const method3 = sortingMethod3(customersWithoutSort, sort);
         const endTime3 = performance.now();
         const timeTaken3 = (endTime3 - startTime3) + databaseTime;
 
         const startTime4 = performance.now();
         // sort using method 4 - using for loops and if
-        const method4 = sortingMethod4(customersWithoutSort);
+        const method4 = sortingMethod4(customersWithoutSort, sort);
         const endTime4 = performance.now();
         const timeTaken4 = (endTime4 - startTime4) + databaseTime;
 
         const startTime5 = performance.now();
-        // sort using method 5 - using lodash npm
-        const method5 = _.sortBy(customersWithoutSort, 'mobileNumber');
+        // sort using method 5 - using map 
+        const method5 = sortingMethod5(customersWithoutSort, sort);
         const endTime5 = performance.now();
         const timeTaken5 = (endTime5 - startTime5) + databaseTime;
 
         const startTime6 = performance.now();
-        // sort using method 6 - using underscore npm
-        const method6 = __.sortBy(customersWithoutSort, 'mobileNumber');
+        // sort using method 6 - using lodash npm
+        const method6 = sort === 'desc' ? _.sortBy(customersWithoutSort, 'mobileNumber').reverse() : _.sortBy(customersWithoutSort, 'mobileNumber');
         const endTime6 = performance.now();
         const timeTaken6 = (endTime6 - startTime6) + databaseTime;
 
-        res.status(200).send({ success: true, method1, method2, method3, method4, method5, method6, timeTaken1, timeTaken2, timeTaken3, timeTaken4, timeTaken5, timeTaken6 });
+        const startTime7 = performance.now();
+        // sort using method 7 - using underscore npm
+        const method7 = sort === 'desc' ? __.sortBy(customersWithoutSort, 'mobileNumber').reverse() : __.sortBy(customersWithoutSort, 'mobileNumber');
+        const endTime7 = performance.now();
+        const timeTaken7 = (endTime7 - startTime7) + databaseTime;
+
+        res.status(200).send({ success: true, method1, method2, method3, method4, method5, method6, method7, timeTaken1, timeTaken2, timeTaken3, timeTaken4, timeTaken5, timeTaken6, timeTaken7 });
     } catch (error) {
         handleError(res, error);
     }
