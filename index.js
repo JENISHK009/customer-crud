@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import { customerRoutes } from "./src/routes/index.js";
+import { customerRoutes, orderRoutes, productRoutes, paymentRotes } from "./src/routes/index.js";
 import { initializeConnections } from "./src/config/index.js";
 
 const app = express();
@@ -15,6 +15,10 @@ async function startServer() {
     app.use(cors());
 
     app.use("/customer", customerRoutes);
+    app.use("/order", orderRoutes);
+    app.use("/product", productRoutes);
+    app.use("/payment", paymentRotes);
+
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
