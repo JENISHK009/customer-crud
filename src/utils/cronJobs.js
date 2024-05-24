@@ -11,11 +11,11 @@ const updatePointEverySec = new cron.CronJob('* * * * * *', async () => {
         const bulkOperations = randomCustomers.map(customer => ({
             updateOne: {
                 filter: { _id: customer._id },
-                update: { $set: { points: (customer.points || 0) + 1 } }
+                update: { $inc: { points: 1 } }
             }
         }));
 
-        await customersCollection.bulkWrite(bulkOperations);
+        const result = await customersCollection.bulkWrite(bulkOperations);
 
         console.log('Points updated for 100 customers.');
     } catch (error) {
@@ -23,6 +23,4 @@ const updatePointEverySec = new cron.CronJob('* * * * * *', async () => {
     }
 }, null, true, null);
 
-
-export { updatePointEverySec };
-
+export { updatePointEverySec }
