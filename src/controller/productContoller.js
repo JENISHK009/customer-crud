@@ -5,9 +5,9 @@ const addProduct = async (req, res) => {
     try {
         const { name, price, description, category, stock } = req.body;
 
-        if (!name || !price || !description || !category || !stock) {
-            return res.status(400).send({ success: false, message: "All fields are required" });
-        }
+        if (!name || !price || !description || !category || !stock)
+            throw new Error("All fields are required");
+
 
         const newProduct = new productModel({
             name,
