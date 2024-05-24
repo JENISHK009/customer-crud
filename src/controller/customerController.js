@@ -70,14 +70,9 @@ const getAllCustomers = async ({ query }, res) => {
 
         const sortCriteria =
             sort === "asc" ? { mobileNumber: 1 } : { mobileNumber: -1 };
-        const result = await CustomerModel.aggregate([
-            { $match: filter },
-            { $sort: sortCriteria },
-            { $limit: 1 }
-        ]);
-        const customer = result[0] || null;
+        const data = await CustomerModel.findOne(filter).sort(sortCriteria);
 
-        res.status(200).send({ success: true, data: customer });
+        res.status(200).send({ success: true, data });
     } catch (error) {
         handleError(res, error);
     }
