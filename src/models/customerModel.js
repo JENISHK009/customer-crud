@@ -14,6 +14,9 @@ const customerSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    points: {
+        type: Number,
+    }
 }, { versionKey: false });
 
 const Customer = mongoose.model('Customer', customerSchema);

@@ -62,7 +62,6 @@ const initializeConnections = async () => {
     await createDatabaseConnection(process.env.DATABASE_URL);
     await connectToDatabasePromise(process.env.DATABASE_URL);
     await connectUsingMongodb(process.env.DATABASE_URL_MONGODB);
-
 };
 
 const getConnection = (method) => {

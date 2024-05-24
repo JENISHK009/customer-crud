@@ -54,8 +54,8 @@ const createCustomer = async (req, res) => {
 
 const getAllCustomers = async ({ query }, res) => {
     try {
-        const db = getConnection("createDatabaseConnection");
-        const CustomerModel = db.model("Customer", customerModel.schema);
+        const db = getConnection("connectUsingMongodb");
+        const customersCollection = db.collection("customers");
 
         const { search, sort = "asc" } = query;
         const filter = search
@@ -70,7 +70,7 @@ const getAllCustomers = async ({ query }, res) => {
 
         const sortCriteria =
             sort === "asc" ? { mobileNumber: 1 } : { mobileNumber: -1 };
-        const data = await CustomerModel.findOne(filter).sort(sortCriteria);
+        const data = await customersCollection.findOne(filter, { sort: sortCriteria });
 
         res.status(200).send({ success: true, data });
     } catch (error) {
