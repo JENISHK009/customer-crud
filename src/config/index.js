@@ -50,7 +50,10 @@ const connectToDatabasePromise = async (uri) => {
 
 const connectUsingMongodb = async (uri) => {
     if (!connections['connectUsingMongodb']) {
-        const client = new MongoClient(uri);
+        const client = new MongoClient(uri, {
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000
+        });
         await client.connect();
         console.log('Connected to MongoDB using MongoClient');
         connections['connectUsingMongodb'] = client
