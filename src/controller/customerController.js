@@ -54,7 +54,8 @@ const createCustomer = async (req, res) => {
 
 const getAllCustomers = async ({ query }, res) => {
     try {
-        const db = getConnection("connectUsingMongodb");
+        const client = getConnection("connectUsingMongodb");
+        const db = client.db('customer-crud');
         const customersCollection = db.collection("customers");
 
         const { search, sort = "asc" } = query;
@@ -124,7 +125,8 @@ const updateCustomer = async ({ body }, res) => {
 
 const deleteCustomer = async ({ query }, res) => {
     try {
-        const db = getConnection("connectUsingMongodb"); // DB connection method 4
+        const client = getConnection("connectUsingMongodb"); // DB connection method 4
+        const db = client.db('customer-crud');
         const customersCollection = db.collection("customers");
 
         const { customerId } = query;

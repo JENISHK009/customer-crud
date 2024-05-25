@@ -53,7 +53,7 @@ const connectUsingMongodb = async (uri) => {
         const client = new MongoClient(uri);
         await client.connect();
         console.log('Connected to MongoDB using MongoClient');
-        connections['connectUsingMongodb'] = client.db('customer-crud');
+        connections['connectUsingMongodb'] = client
     }
     return connections['connectUsingMongodb'];
 }
