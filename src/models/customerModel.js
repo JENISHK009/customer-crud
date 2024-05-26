@@ -12,7 +12,6 @@ const customerSchema = new mongoose.Schema({
     mobileNumber: {
         type: String,
         required: true,
-        unique: true
     },
     points: {
         type: Number,

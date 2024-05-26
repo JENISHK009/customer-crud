@@ -7,6 +7,7 @@ import {
     validateObjectId,
     handleError,
     validateMobileNumber,
+    firebaseDb,
 } from "../utils/index.js";
 
 const createCustomer = async (req, res) => {
@@ -25,12 +26,10 @@ const createCustomer = async (req, res) => {
         }, []);
 
         if (validationErrors.length > 0) {
-            return res
-                .status(400)
-                .send({
-                    success: false,
-                    message: `${validationErrors.join(", ")} is required`,
-                });
+            return res.status(400).send({
+                success: false,
+                message: `${validationErrors.join(", ")} is required`,
+            });
         }
 
         const invalidMobileNumbers = customersData.filter(
@@ -40,13 +39,23 @@ const createCustomer = async (req, res) => {
 
         const savedCustomers = await customerModel.insertMany(customersData);
 
-        res
-            .status(200)
-            .send({
-                success: true,
-                message: "Customers created successfully",
-                data: savedCustomers,
-            });
+        const plainCustomers = savedCustomers.map((customer) => ({
+            ...customer.toObject(),
+            _id: customer._id.toString(),
+        }));
+
+        const batch = firebaseDb.batch();
+        plainCustomers.forEach((customer) => {
+            const customerRef = firebaseDb.collection("customers").doc(customer._id);
+            batch.set(customerRef, customer);
+        });
+        await batch.commit();
+
+        res.status(200).send({
+            success: true,
+            message: "Customers created successfully",
+            data: savedCustomers,
+        });
     } catch (error) {
         handleError(res, error);
     }
@@ -55,7 +64,7 @@ const createCustomer = async (req, res) => {
 const getAllCustomers = async ({ query }, res) => {
     try {
         const client = getConnection("connectUsingMongodb");
-        const db = client.db('customer-crud');
+        const db = client.db("customer-crud");
         const customersCollection = db.collection("customers");
 
         const { search, sort = "asc" } = query;
@@ -71,7 +80,9 @@ const getAllCustomers = async ({ query }, res) => {
 
         const sortCriteria =
             sort === "asc" ? { mobileNumber: 1 } : { mobileNumber: -1 };
-        const data = await customersCollection.findOne(filter, { sort: sortCriteria });
+        const data = await customersCollection.findOne(filter, {
+            sort: sortCriteria,
+        });
 
         res.status(200).send({ success: true, data });
     } catch (error) {
@@ -105,8 +116,8 @@ const updateCustomer = async ({ body }, res) => {
 
         if (!validateObjectId(customerId, res)) return;
 
-        if (!updatedData || Object.keys(updatedData).length === 0) throw new Error("Please pass data");
-
+        if (!updatedData || Object.keys(updatedData).length === 0)
+            throw new Error("Please pass data");
 
         const customer = await customerModel.findByIdAndUpdate(
             customerId,
@@ -114,8 +125,16 @@ const updateCustomer = async ({ body }, res) => {
             { new: true }
         );
 
-        if (!customer) throw new Error("Customer not found");
+        if (!customer) {
+            throw new Error("Customer not found");
+        }
 
+        const customerIdString = customerId.toString();
+
+        const customerRef = firebaseDb
+            .collection("customers")
+            .doc(customerIdString);
+        await customerRef.update(updatedData);
 
         res.status(200).send({ success: true, data: customer });
     } catch (error) {
@@ -126,12 +145,12 @@ const updateCustomer = async ({ body }, res) => {
 const deleteCustomer = async ({ query }, res) => {
     try {
         const client = getConnection("connectUsingMongodb"); // DB connection method 4
-        const db = client.db('customer-crud');
+        const db = client.db("customer-crud");
         const customersCollection = db.collection("customers");
 
         const { customerId } = query;
-        if (!customerId || !Types.ObjectId.isValid(customerId)) throw new Error("Invalid customerId");
-
+        if (!customerId || !Types.ObjectId.isValid(customerId))
+            throw new Error("Invalid customerId");
 
         const deletedCustomer = await customersCollection.findOneAndDelete({
             _id: new ObjectId(customerId),
