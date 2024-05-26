@@ -11,11 +11,20 @@ import {
 } from "../utils/index.js";
 
 const createCustomer = async (req, res) => {
-    try {
-        const customersData = req.body;
+    const client = getConnection("connectUsingMongodb");
+    const session = client.startSession();
+    let transactionCommitted = false;
 
+    try {
+        session.startTransaction();
+
+        const db = client.db("customer-crud");
+        const customersCollection = db.collection("customers");
+
+        const customersData = req.body;
         if (!Array.isArray(customersData) || customersData.length === 0)
             throw new Error("Customer data must be provided as an array");
+
 
         const validationErrors = customersData.reduce((errors, customer, index) => {
             if (!customer.firstname) errors.push(`Customer ${index + 1}: firstname`);
@@ -37,12 +46,13 @@ const createCustomer = async (req, res) => {
         );
         if (invalidMobileNumbers.length > 0) return;
 
-        const savedCustomers = await customerModel.insertMany(customersData);
+        const result = await customersCollection.insertMany(customersData, { session });
 
-        const plainCustomers = savedCustomers.map((customer) => ({
-            ...customer.toObject(),
-            _id: customer._id.toString(),
+        const plainCustomers = customersData.map((customer, index) => ({
+            ...customer,
+            _id: result.insertedIds[index].toString(),
         }));
+
 
         const batch = firebaseDb.batch();
         plainCustomers.forEach((customer) => {
@@ -51,13 +61,21 @@ const createCustomer = async (req, res) => {
         });
         await batch.commit();
 
+        await session.commitTransaction();
+        transactionCommitted = true;
+
         res.status(200).send({
             success: true,
             message: "Customers created successfully",
-            data: savedCustomers,
+            data: plainCustomers,
         });
     } catch (error) {
+        if (!transactionCommitted) {
+            await session.abortTransaction();
+        }
         handleError(res, error);
+    } finally {
+        session.endSession();
     }
 };
 
@@ -110,37 +128,58 @@ const getCustomerById = async ({ query }, res) => {
     }
 };
 
-const updateCustomer = async ({ body }, res) => {
+const updateCustomer = async (req, res) => {
+    const client = getConnection("connectUsingMongodb");
+    const session = client.startSession();
     try {
-        const { customerId, updatedData } = body;
+        const { customerId, updatedData } = req.body;
 
         if (!validateObjectId(customerId, res)) return;
 
-        if (!updatedData || Object.keys(updatedData).length === 0)
+        if (!updatedData || Object.keys(updatedData).length === 0) {
             throw new Error("Please pass data");
+        }
 
-        const customer = await customerModel.findByIdAndUpdate(
-            customerId,
-            updatedData,
-            { new: true }
+        session.startTransaction();
+
+        const db = client.db("customer-crud");
+        const customersCollection = db.collection("customers");
+
+        const customerObjectId = new ObjectId(customerId);
+
+        const existingCustomer = await customersCollection.findOne({ _id: customerObjectId });
+        if (!existingCustomer) {
+            console.error("Customer with ID", customerObjectId, "does not exist in MongoDB.");
+            throw new Error("Customer not found");
+        }
+
+        const customer = await customersCollection.findOneAndUpdate(
+            { _id: customerObjectId },
+            { $set: updatedData },
+            { returnDocument: "after", session }
         );
 
         if (!customer) {
             throw new Error("Customer not found");
         }
 
-        const customerIdString = customerId.toString();
-
-        const customerRef = firebaseDb
-            .collection("customers")
-            .doc(customerIdString);
+        const customerIdString = customer._id.toString();
+        const customerRef = firebaseDb.collection("customers").doc(customerIdString);
         await customerRef.update(updatedData);
+
+        await session.commitTransaction();
+        session.endSession();
 
         res.status(200).send({ success: true, data: customer });
     } catch (error) {
+        await session.abortTransaction();
         handleError(res, error);
+    } finally {
+        session.endSession();
     }
 };
+
+
 
 const deleteCustomer = async ({ query }, res) => {
     try {
