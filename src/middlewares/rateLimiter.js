@@ -9,13 +9,13 @@ const rateLimiter = rateLimit({
     max: MAX_REQUESTS_PER_WINDOW,
     message: {
         success: false,
-        message: "Too many requests, please try again later.",
+        message: "Too many requests, please try again later",
     },
     store: new MemoryStore({ max: 100 }),
     handler: function (req, res, next) {
         const { ip } = req;
         blockedIps.add(ip);
-        console.log(`IP ${ip} added to blocked list for exceeding rate limit.`);
+        console.log(`IP ${ip} added to blocked list for exceeding rate limit`);
         next();
     }
 });
