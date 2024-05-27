@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { customerRoutes, orderRoutes, productRoutes, paymentRotes } from "./src/routes/index.js";
 import { initializeConnections } from "./src/config/index.js";
 import { updatePointEverySec } from "./src/utils/index.js";
+import { blockIps, rateLimiter } from './src/middlewares/index.js'
 const app = express();
 dotenv.config();
 
@@ -13,6 +14,9 @@ async function startServer() {
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cors());
+
+    app.use(rateLimiter);
+    app.use(blockIps);
 
     app.use("/customer", customerRoutes);
     app.use("/order", orderRoutes);
