@@ -11,11 +11,26 @@ const orderSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
-    productIds: [
+    products: [
         {
-            type: Types.ObjectId,
-            ref: 'Product',
-            required: true
+            productId: {
+                type: Types.ObjectId,
+                ref: 'Product',
+                required: true
+            },
+            sellerId: {
+                type: Types.ObjectId,
+                ref: 'Seller',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true
+            }
         }
     ],
     status: {

@@ -1,22 +1,37 @@
 import mongoose from 'mongoose';
 
-const productSchema = new mongoose.Schema({
-    name: {
-        type: String,
+const priceSchema = new mongoose.Schema({
+    sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seller',
         required: true
     },
     price: {
         type: Number,
+        required: true
+    }
+}, { _id: false });
+
+const productSchema = new mongoose.Schema({
+    name: {
+        type: String,
         required: true
     },
     description: {
         type: String,
         required: true
     },
-    category: {
-        type: String,
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true
     },
+    subcategoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subcategory',
+        required: true
+    },
+    prices: [priceSchema],
     stock: {
         type: Number,
         required: true

@@ -1,8 +1,13 @@
-import customerController from './customerController.js';
-import orderContoller from './orderContoller.js';
-import productContoller from './productContoller.js';
-import paymentContoller from './paymentContoller.js';
+import customerController from "./customerController.js";
+import orderContoller from "./orderContoller.js";
+import productContoller from "./productContoller.js";
+import paymentContoller from "./paymentContoller.js";
+import reportConroller from "./reportConroller.js";
 
-
-
-export { customerController, orderContoller, productContoller, paymentContoller };
+export {
+    customerController,
+    orderContoller,
+    productContoller,
+    paymentContoller,
+    reportConroller,
+};

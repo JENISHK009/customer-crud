@@ -2,10 +2,16 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import { customerRoutes, orderRoutes, productRoutes, paymentRotes } from "./src/routes/index.js";
+import {
+    customerRoutes,
+    orderRoutes,
+    productRoutes,
+    paymentRotes,
+    reportRoutes,
+} from "./src/routes/index.js";
 import { initializeConnections } from "./src/config/index.js";
 import { updatePointEverySec } from "./src/utils/index.js";
-import { blockIps, rateLimiter } from './src/middlewares/index.js'
+import { blockIps, rateLimiter } from "./src/middlewares/index.js";
 const app = express();
 dotenv.config();
 
@@ -22,6 +28,7 @@ async function startServer() {
     app.use("/order", orderRoutes);
     app.use("/product", productRoutes);
     app.use("/payment", paymentRotes);
+    app.use("/report", reportRoutes);
 
     updatePointEverySec.start();
 
