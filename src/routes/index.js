@@ -3,6 +3,8 @@ import orderRoutes from "./orderRoutes.js";
 import productRoutes from "./productRoutes.js";
 import paymentRotes from "./paymentRotes.js";
 import reportRoutes from "./reportRoutes.js";
+import userRoutes from "./userRoutes.js";
+
 
 export {
     customerRoutes,
@@ -10,4 +12,5 @@ export {
     productRoutes,
     paymentRotes,
     reportRoutes,
+    userRoutes
 };

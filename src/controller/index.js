@@ -3,6 +3,8 @@ import orderContoller from "./orderContoller.js";
 import productContoller from "./productContoller.js";
 import paymentContoller from "./paymentContoller.js";
 import reportConroller from "./reportConroller.js";
+import userController from "./userController.js";
+
 
 export {
     customerController,
@@ -10,4 +12,5 @@ export {
     productContoller,
     paymentContoller,
     reportConroller,
+    userController
 };
