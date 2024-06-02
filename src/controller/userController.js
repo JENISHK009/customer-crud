@@ -8,12 +8,9 @@ const reportForReferal = async (req, res) => {
         const db = client.db("customer-crud");
         const usersCollection = db.collection("users");
 
-        let { startDate, endDate, userId } = req.query
+        let { startDate, endDate } = req.query;
 
         let userReport = await usersCollection.aggregate([
-            {
-                $match: { _id: new ObjectId(userId) }
-            },
             {
                 $lookup: {
                     from: 'users',
@@ -21,13 +18,12 @@ const reportForReferal = async (req, res) => {
                     foreignField: '_id',
                     as: 'referredUser'
                 }
-
             },
             {
-                $unwind: '$referredUser'
-            },
-            {
-                $match: { 'referredUser.createdAt': { $gte: startDate, $lt: endDate } }
+                $unwind: {
+                    path: '$referredUser',
+                    preserveNullAndEmptyArrays: true
+                }
             },
             {
                 $lookup: {
@@ -47,24 +43,30 @@ const reportForReferal = async (req, res) => {
                     }],
                     as: 'transactions'
                 }
-
             },
             {
-                $unwind: '$transactions'
+                $unwind: {
+                    path: '$transactions',
+                    preserveNullAndEmptyArrays: true
+                }
             },
-            {
-                $match: { 'transactions.createdAt': { $gte: startDate, $lt: endDate } }
-            },
-
             {
                 $group: {
                     _id: '$userName',
-                    referredUserCount: { $sum: 1 },
+                    referredUserCount: {
+                        $sum: {
+                            $cond: [{ $ifNull: ['$referredUser', false] }, 1, 0]
+                        }
+                    },
                     totalBonus: { $sum: '$transactions.amount' },
-                    referredUser: { $push: '$referredUser' }
+                }
+            },
+            {
+                $sort: {
+                    referredUserCount: -1
                 }
             }
-        ]).toArray()
+        ]).toArray();
 
         res.status(200).send({
             success: true,
@@ -73,6 +75,7 @@ const reportForReferal = async (req, res) => {
     } catch (error) {
         handleError(res, error);
     }
-}
+};
+
 
 export default { reportForReferal }
