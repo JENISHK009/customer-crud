@@ -52,13 +52,15 @@ const reportForReferal = async (req, res) => {
             },
             {
                 $group: {
-                    _id: '$userName',
+                    _id: '$_id',
                     referredUserCount: {
                         $sum: {
                             $cond: [{ $ifNull: ['$referredUser', false] }, 1, 0]
                         }
                     },
                     totalBonus: { $sum: '$transactions.amount' },
+                    userName: { $first: "$userName" },
+
                 }
             },
             {
