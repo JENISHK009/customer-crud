@@ -1,0 +1,171 @@
+//create event payload
+{
+    "name": "event2",
+    "date": "2024-08-15T18:00:00.000Z",
+    "caterer": "665e083e365b8a0a28a8a195",
+    "decoration": "665e083f365b8a0a28a8a197",
+    "lighting": "665e083f365b8a0a28a8a19c", 
+    "catererServices": [
+        {
+            "serviceName": "caterers2servce1"
+        },
+        {
+            "serviceName": "caterers2servce3"
+        }
+    ],
+    "decorationServices": [
+        {
+            "serviceName": "decoration1service1"
+        },
+           {
+            "serviceName": "decoration1service2"
+        }
+    ],
+    "lightingServices": [
+        {
+            "serviceName": "lighting3service1"
+        },
+        {
+            "serviceName": "lighting3service2"
+        }
+    ]
+}
+
+//update event payload
+{
+    "id": "665e1f132ac0c95443143568",
+    "name": "even32",
+    "date": "2024-08-15T18:00:00.000Z",
+    "caterer": "665e083e365b8a0a28a8a195",
+    "decoration": "665e083f365b8a0a28a8a197",
+    "lighting": "665e083f365b8a0a28a8a19c", 
+    "catererServices": [
+        {
+            "serviceName": "caterers2servce1"
+        },
+        {
+            "serviceName": "caterers2servce3"
+        }
+    ],
+    "decorationServices": [
+        {
+            "serviceName": "decoration1service1"
+        },
+           {
+            "serviceName": "decoration1service2"
+        }
+    ],
+    "lightingServices": [
+        {
+            "serviceName": "lighting3service1"
+        },
+        {
+            "serviceName": "lighting3service2"
+        }
+    ]
+}
+
+//getAll event response
+{
+    "success": true,
+    "data": {
+        "page": 1,
+        "totalPages": 1,
+        "totalEvents": 2,
+        "events": [
+            {
+                "_id": "665e1f132ac0c95443143568",
+                "name": "event1",
+                "date": "2024-08-15T18:00:00.000Z",
+                "catererServices": [
+                    {
+                        "serviceName": "caterers1service1",
+                        "price": 2000
+                    },
+                    {
+                        "serviceName": "caterers1service2",
+                        "price": 3000
+                    }
+                ],
+                "decorationServices": [
+                    {
+                        "serviceName": "decoration2service1",
+                        "price": 2000
+                    }
+                ],
+                "lightingServices": [
+                    {
+                        "serviceName": "lighting1service3",
+                        "price": 600
+                    },
+                    {
+                        "serviceName": "lighting1service1",
+                        "price": 500
+                    }
+                ],
+                "catererDetails": {
+                    "_id": "665e083e365b8a0a28a8a194",
+                    "name": "caterers1"
+                },
+                "decorationDetails": {
+                    "_id": "665e083f365b8a0a28a8a198",
+                    "theme": "decoration2"
+                },
+                "lightingDetails": {
+                    "_id": "665e083f365b8a0a28a8a19a",
+                    "concept": "lighting1"
+                },
+                "totalPrice": 8100
+            },
+            {
+                "_id": "665e1f8e2ac0c95443143569",
+                "name": "event2",
+                "date": "2024-08-15T18:00:00.000Z",
+                "catererServices": [
+                    {
+                        "serviceName": "caterers2servce1",
+                        "price": 2500
+                    },
+                    {
+                        "serviceName": "caterers2servce3",
+                        "price": 1800
+                    }
+                ],
+                "decorationServices": [
+                    {
+                        "serviceName": "decoration1service1",
+                        "price": 1500
+                    },
+                    {
+                        "serviceName": "decoration1service2",
+                        "price": 800
+                    }
+                ],
+                "lightingServices": [
+                    {
+                        "serviceName": "lighting3service1",
+                        "price": 1000
+                    },
+                    {
+                        "serviceName": "lighting3service2",
+                        "price": 800
+                    }
+                ],
+                "catererDetails": {
+                    "_id": "665e083e365b8a0a28a8a195",
+                    "name": "caterers2"
+                },
+                "decorationDetails": {
+                    "_id": "665e083f365b8a0a28a8a197",
+                    "theme": "decoration1"
+                },
+                "lightingDetails": {
+                    "_id": "665e083f365b8a0a28a8a19c",
+                    "concept": "lighting3"
+                },
+                "totalPrice": 8400
+            }
+        ]
+    }
+}
+

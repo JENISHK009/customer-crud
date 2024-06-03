@@ -4,6 +4,8 @@ import productRoutes from "./productRoutes.js";
 import paymentRotes from "./paymentRotes.js";
 import reportRoutes from "./reportRoutes.js";
 import userRoutes from "./userRoutes.js";
+import eventRoutes from "./eventRoutes.js";
+
 
 
 export {
@@ -12,5 +14,6 @@ export {
     productRoutes,
     paymentRotes,
     reportRoutes,
-    userRoutes
+    userRoutes,
+    eventRoutes
 };

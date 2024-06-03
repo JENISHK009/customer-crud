@@ -1,13 +1,14 @@
-import mongoose from 'mongoose';
-
-const categorySchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true
+const categorySchema = {
+    $jsonSchema: {
+        bsonType: 'object',
+        required: ['name'],
+        properties: {
+            name: {
+                bsonType: 'string',
+                uniqueItems: true
+            }
+        }
     }
-}, { versionKey: false });
+};
 
-const category = mongoose.model('category', categorySchema);
-
-export default category;
+export default categorySchema;

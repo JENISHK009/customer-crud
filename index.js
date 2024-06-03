@@ -8,7 +8,8 @@ import {
     productRoutes,
     paymentRotes,
     reportRoutes,
-    userRoutes
+    userRoutes,
+    eventRoutes
 } from "./src/routes/index.js";
 import { initializeConnections } from "./src/config/index.js";
 import { updatePointEverySec } from "./src/utils/index.js";
@@ -31,6 +32,8 @@ async function startServer() {
     app.use("/payment", paymentRotes);
     app.use("/report", reportRoutes);
     app.use("/user", userRoutes);
+    app.use("/event", eventRoutes);
+
 
 
     updatePointEverySec.start();

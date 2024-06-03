@@ -4,6 +4,8 @@ import productContoller from "./productContoller.js";
 import paymentContoller from "./paymentContoller.js";
 import reportConroller from "./reportConroller.js";
 import userController from "./userController.js";
+import eventContoller from "./eventContoller.js";
+
 
 
 export {
@@ -12,5 +14,6 @@ export {
     productContoller,
     paymentContoller,
     reportConroller,
-    userController
+    userController,
+    eventContoller
 };
